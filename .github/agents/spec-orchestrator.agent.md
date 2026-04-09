@@ -56,7 +56,7 @@ Delegate to **`Specification / Jira Connector`** Mode 1. Returns the highest-ran
 4. Read `/apps/<app_folder>/constitution.md` for the resolved app.
 5. Store the app folder name, app repo path, and a short constitution summary for later delegations.
 
-### Step 3: Transition to Specyfying
+### Step 3: Transition to Specifying
 
 Delegate to **`Specification / Jira Connector`** Mode 3 to move the work item to the configured `specifying` workflow state with a brief summary comment that mentions the resolved app and that specification work is starting.
 
