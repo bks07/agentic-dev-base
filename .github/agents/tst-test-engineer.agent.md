@@ -50,6 +50,7 @@ Guidelines:
 - Use table-driven tests for input permutations when appropriate.
 - Cover negative paths and edge cases.
 - Reuse the selected app's existing app wiring where practical instead of re-implementing product logic in tests.
+- Do not rely on ambient test-runner globals such as `describe`, `it`, `expect`, or `beforeEach` unless the selected app repo explicitly enables them in TypeScript config. For Vitest test files, prefer explicit imports from `vitest` so `npm run typecheck` and production builds remain valid.
 
 ## Commands
 

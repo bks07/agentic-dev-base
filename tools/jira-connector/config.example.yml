@@ -7,14 +7,14 @@ jira:
   user_email: your.email@example.com
 
 project:
-  key: TAM
+  key: ASD
 
 # Work item selection settings used by spec agents
 work_item:
   item_type: Prompt
   workflow:
     ready: Ready
-    specifying: Specyfying
+    specifying: Specifying
     coding: Coding
     testing: Testing
     blocked: Blocked

@@ -1,7 +1,7 @@
 ---
 name: Testing / Orchestrator
 user-invocable: false
-description: Orchestrates testing work only inside the selected app repo under `/apps`, coordinating test specialists and any spec follow-up without spilling into the wrong nested repo.
+description: Orchestrates testing work only inside the selected app repo under `/apps`, coordinating test specialists and any spec follow-up without spilling into the wrong nested repo, and returns a detailed testing report for `Manager` to post to Jira.
 tools: [read, search, todo, agent]
 agents: [Testing / Test Engineer, Testing / UI Tester, Testing / CI Engineer, Testing / Test Quality Reviewer, Specification / Orchestrator]
 hooks:
@@ -36,6 +36,7 @@ The target testing stack is:
 - Do NOT approve promotion to `develop` unless the required automated testing and independent quality review are complete.
 - Do NOT delegate directly to specification scribes or `Specification / Status`; use `Specification / Orchestrator` if spec maintenance is required.
 - Do NOT inspect or modify sibling app repos once the target app is selected.
+- Do NOT interact with Jira directly; `Manager` owns Jira comments and status transitions.
 - Always return an explicit next workflow state for the Manager: `done`, `coding`, or `blocked`.
 
 ## Allowed Specialists
@@ -90,9 +91,12 @@ Return these sections:
 4. `Final Recommendation`
 5. `Next Workflow State`
 6. `Spec Follow-up`
+7. `Detailed Testing Report`
 
 The `Final Recommendation` must explicitly say either `Ready to promote to develop` or `Block promotion to develop` for the selected app repo.
 
 The `Next Workflow State` section must explicitly say one of `done`, `coding`, or `blocked` and include one short rationale sentence.
 
 The `Spec Follow-up` section must explicitly say either `No spec maintenance required` or list the spec files created or changed through `Specification / Orchestrator`.
+
+The `Detailed Testing Report` section must be written so `Manager` can post it to Jira with minimal editing.
