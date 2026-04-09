@@ -1,0 +1,3 @@
+components:
+  - name: Team Availability Matrix
+    app_folder: team-availability-matrix

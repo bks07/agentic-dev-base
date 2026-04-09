@@ -1,0 +1,21 @@
+# Jira Cloud connection settings
+# All values can be overridden by environment variables prefixed with JIRA_
+# e.g. JIRA_BASE_URL, JIRA_USER_EMAIL, JIRA_API_TOKEN, JIRA_PROJECT_KEY
+
+jira:
+  base_url: https://yourdomain.atlassian.net
+  user_email: your.email@example.com
+
+project:
+  key: TAM
+
+# Work item selection settings used by spec agents
+work_item:
+  item_type: Prompt
+  workflow:
+    ready: Ready
+    specifying: Specyfying
+    coding: Coding
+    testing: Testing
+    blocked: Blocked
+    done: Done
