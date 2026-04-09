@@ -1,6 +1,7 @@
 """Shared Jira Cloud REST API client used by all connector scripts."""
 
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -125,21 +126,178 @@ def search_work_items(
     return all_work_items
 
 
+def _normalize_comment_body(body: str) -> str:
+    normalized = body.replace("\r\n", "\n").replace("\r", "\n")
+    normalized = normalized.replace("\\r\\n", "\n").replace("\\n", "\n")
+    return normalized.strip()
+
+
+def _parse_inline_marks(text: str) -> list[dict]:
+    parts: list[dict] = []
+    pattern = re.compile(r"(\*\*[^*]+\*\*|`[^`]+`)")
+    index = 0
+
+    for match in pattern.finditer(text):
+        if match.start() > index:
+            parts.append({"type": "text", "text": text[index:match.start()]})
+
+        token = match.group(0)
+        if token.startswith("**") and token.endswith("**"):
+            parts.append(
+                {
+                    "type": "text",
+                    "text": token[2:-2],
+                    "marks": [{"type": "strong"}],
+                }
+            )
+        elif token.startswith("`") and token.endswith("`"):
+            parts.append(
+                {
+                    "type": "text",
+                    "text": token[1:-1],
+                    "marks": [{"type": "code"}],
+                }
+            )
+        index = match.end()
+
+    if index < len(text):
+        parts.append({"type": "text", "text": text[index:]})
+
+    return [part for part in parts if part.get("text")]
+
+
+def _paragraph_node(text: str, node_type: str = "paragraph", attrs: dict | None = None) -> dict:
+    content = _parse_inline_marks(text) or [{"type": "text", "text": text}]
+    node: dict = {"type": node_type, "content": content}
+    if attrs:
+        node["attrs"] = attrs
+    return node
+
+
+def _code_block_node(lines: list[str]) -> dict:
+    text = "\n".join(lines)
+    return {
+        "type": "codeBlock",
+        "content": [{"type": "text", "text": text}],
+    }
+
+
+def _list_node(items: list[str], ordered: bool) -> dict:
+    list_type = "orderedList" if ordered else "bulletList"
+    content = []
+    for item in items:
+        content.append(
+            {
+                "type": "listItem",
+                "content": [_paragraph_node(item)],
+            }
+        )
+    return {"type": list_type, "content": content}
+
+
+def _append_paragraphs(content: list[dict], paragraph_lines: list[str]) -> None:
+    for line in paragraph_lines:
+        stripped = line.strip()
+        if stripped:
+            content.append(_paragraph_node(stripped))
+
+
+def build_comment_adf(body: str) -> dict:
+    text = _normalize_comment_body(body)
+    if not text:
+        return {"version": 1, "type": "doc", "content": []}
+
+    lines = text.split("\n")
+    content: list[dict] = []
+    paragraph_lines: list[str] = []
+    list_items: list[str] = []
+    list_type: str | None = None
+    code_lines: list[str] = []
+    in_code_block = False
+
+    def flush_paragraphs() -> None:
+        nonlocal paragraph_lines
+        _append_paragraphs(content, paragraph_lines)
+        paragraph_lines = []
+
+    def flush_list() -> None:
+        nonlocal list_items, list_type
+        if list_items and list_type:
+            content.append(_list_node(list_items, ordered=list_type == "ordered"))
+        list_items = []
+        list_type = None
+
+    def flush_code_block() -> None:
+        nonlocal code_lines
+        if code_lines:
+            content.append(_code_block_node(code_lines))
+        code_lines = []
+
+    for raw_line in lines:
+        line = raw_line.rstrip()
+        stripped = line.strip()
+
+        if stripped.startswith("```"):
+            flush_paragraphs()
+            flush_list()
+            if in_code_block:
+                flush_code_block()
+                in_code_block = False
+            else:
+                in_code_block = True
+            continue
+
+        if in_code_block:
+            code_lines.append(line)
+            continue
+
+        heading_match = re.match(r"^(#{1,6})\s+(.*)$", stripped)
+        bullet_match = re.match(r"^[-*]\s+(.*)$", stripped)
+        ordered_match = re.match(r"^\d+\.\s+(.*)$", stripped)
+
+        if not stripped:
+            flush_paragraphs()
+            flush_list()
+            continue
+
+        if heading_match:
+            flush_paragraphs()
+            flush_list()
+            level = min(len(heading_match.group(1)), 6)
+            content.append(_paragraph_node(heading_match.group(2).strip(), node_type="heading", attrs={"level": level}))
+            continue
+
+        if bullet_match:
+            flush_paragraphs()
+            if list_type not in (None, "bullet"):
+                flush_list()
+            list_type = "bullet"
+            list_items.append(bullet_match.group(1).strip())
+            continue
+
+        if ordered_match:
+            flush_paragraphs()
+            if list_type not in (None, "ordered"):
+                flush_list()
+            list_type = "ordered"
+            list_items.append(ordered_match.group(1).strip())
+            continue
+
+        flush_list()
+        paragraph_lines.append(line)
+
+    if in_code_block:
+        flush_code_block()
+    flush_paragraphs()
+    flush_list()
+
+    return {"version": 1, "type": "doc", "content": content}
+
+
 def add_work_item_comment(cfg: dict, work_item_key: str, body: str) -> dict:
     session = _session(cfg)
     url = f"{cfg['base_url']}/rest/api/3/issue/{work_item_key}/comment"
-    payload = {
-        "body": {
-            "version": 1,
-            "type": "doc",
-            "content": [
-                {
-                    "type": "paragraph",
-                    "content": [{"type": "text", "text": body}],
-                }
-            ],
-        }
-    }
+    payload = {"body": build_comment_adf(body)}
     resp = session.post(url, json=payload)
     resp.raise_for_status()
     return resp.json()

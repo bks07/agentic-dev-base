@@ -44,7 +44,9 @@ Never call any other agent.
 - Never mark a spec `DONE` before the tested implementation has been promoted in the selected app repo.
 - Require `Specification / Orchestrator` to return the resolved target app folder, app repo path, and constitution summary before implementation begins.
 - Before each phase starts, transition the Jira work item to the matching status through `Jira Connector`.
-- After each phase completes, post a detailed Jira comment through `Jira Connector` before moving to the next phase.
+- Post each detailed phase report through `Jira Connector` exactly once for that phase. Do not infer an extra comment beyond the explicit workflow steps below, and never repost the same specification report.
+- When forwarding a detailed report to `Jira Connector`, pass the report verbatim as raw multiline Markdown text. Never JSON-stringify it, escape newlines, or wrap it as a quoted blob.
+- Keep transition summaries brief and phase-specific. Never paste a previously posted detailed report into a transition summary.
 - Post a final Jira comment with the overall cycle report after the work item is done.
 - Surface blockers clearly; do not hide errors from sub-orchestrators.
 
@@ -97,7 +99,7 @@ Delegate to `Specification / Orchestrator` with:
 
 Before implementation starts:
 
-1. Tell `Jira Connector` to write the detailed specification status report as a Jira comment.
+1. Exactly once, tell `Jira Connector` to write the detailed specification status report as a Jira comment.
 2. Tell `Jira Connector` to move the work item to `coding` with a brief summary that specification completed and implementation is starting for the resolved app.
 
 #### e. Start Delivery Loop

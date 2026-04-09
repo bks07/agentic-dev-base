@@ -62,9 +62,15 @@ Preferred workflow keys are `specifying`, `coding`, `testing`, `blocked`, and `d
 
 Post a comment to a work item using the detailed status report provided by `Manager`. The comment may cover specification, development, testing, blocker, or final-cycle reporting. Preserve the supplied structure unless `Manager` explicitly asks you to reformat it.
 
+Treat the supplied report as raw multiline Markdown-like text. Do not JSON-stringify it, do not collapse it to one line, and do not preserve literal escape sequences such as `\n` when they are intended to be line breaks.
+
+If `Manager` supplies a detailed report and a transition summary for the same phase, post only the detailed report in Mode 4 and keep the transition summary confined to Mode 3.
+
 **Action:** Run:
 ```
-python tools/jira-connector/write-comment-to-work-item.py <WORK_ITEM_KEY> "<FORMATTED_COMMENT>"
+python tools/jira-connector/write-comment-to-work-item.py <WORK_ITEM_KEY> --stdin <<'EOF'
+<FORMATTED_COMMENT>
+EOF
 ```
 
 ## Scripts

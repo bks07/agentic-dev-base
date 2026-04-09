@@ -39,6 +39,7 @@ Delegated orchestrator prompts may use one of these modes:
 12. Spec files remain under `specs/`, but all implementation-context reading must be limited to the selected app repo and its `constitution.md`.
 13. Never interact with Jira directly. `Manager` owns all Jira comments and status transitions through `Jira Connector`.
 14. Return a detailed specification status report that `Manager` can post back to Jira before coding starts.
+15. Write every Jira-ready report as plain multiline Markdown text with real line breaks and readable headings or bullets. Do not JSON-stringify report bodies, escape newlines, or wrap the report in code fences unless the caller explicitly asks for that.
 
 ## Mode: `Start`
 
@@ -93,6 +94,12 @@ Delegate each task to the correct scribe. Pass exact scope, constraints, accepta
 1. Collect all file changes with their statuses (`NEW`, `CHANGED`, `OBSOLETE`).
 2. Delegate to `Specification / Status` for each file and set the reported status.
 3. Return the active Jira work item key, summary, resolved app folder, app repo path, constitution summary, spec deltas, a detailed specification status report suitable for Jira, and blockers if any.
+
+The detailed specification status report must be a Jira-ready Markdown block that uses real line breaks and includes at least:
+- `Specification Summary`
+- `Resolved App`
+- `Spec Deltas`
+- `Open Risks` or `No open risks`
 
 ## Mode: `Spec Maintenance`
 

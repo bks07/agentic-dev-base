@@ -3,6 +3,7 @@
 
 Usage:
     python write-comment-to-work-item.py <WORK_ITEM_KEY> <COMMENT_TEXT>
+    python write-comment-to-work-item.py <WORK_ITEM_KEY> --stdin
 
 Example:
     python write-comment-to-work-item.py ASD-42 "Spec work started for this work item."
@@ -16,11 +17,23 @@ from jira_client import add_work_item_comment, load_config
 
 def main() -> None:
     if len(sys.argv) < 3:
-        print("Usage: python write-comment-to-work-item.py <WORK_ITEM_KEY> <COMMENT_TEXT>", file=sys.stderr)
+        print(
+            "Usage: python write-comment-to-work-item.py <WORK_ITEM_KEY> <COMMENT_TEXT>\n"
+            "   or: python write-comment-to-work-item.py <WORK_ITEM_KEY> --stdin",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     work_item_key = sys.argv[1].strip().upper()
-    comment_text = " ".join(sys.argv[2:])
+    if sys.argv[2] == "--stdin":
+        comment_text = sys.stdin.read().strip()
+    else:
+        comment_text = " ".join(sys.argv[2:]).strip()
+
+    if not comment_text:
+        print("Error: comment text must not be empty.", file=sys.stderr)
+        sys.exit(1)
+
     cfg = load_config()
 
     result = add_work_item_comment(cfg, work_item_key, comment_text)

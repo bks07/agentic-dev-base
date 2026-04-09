@@ -131,6 +131,7 @@ After all implementation tasks are complete and locally validated:
 8. Confirm that no implementation code has been merged or pushed yet.
 9. Report final workflow completion status as ready for testing or blocked.
 10. Include a detailed coding status report suitable for `Manager` to post to Jira before the testing phase starts.
+11. Write the detailed coding status report as plain multiline Markdown text with real line breaks. Do not JSON-stringify the report body or preserve literal `\n` escape sequences.
 
 ## Required Output Format
 
@@ -138,6 +139,8 @@ After all implementation tasks are complete and locally validated:
 2. `Execution Plan`
 3. `Phase Checkpoints`
 4. `Final Status`
+
+The Jira-ready coding report must stay outside JSON and code fences so `Manager` can forward it verbatim.
 
 ## Delegation Prompt Pattern
 

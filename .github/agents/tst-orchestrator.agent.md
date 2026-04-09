@@ -100,3 +100,5 @@ The `Next Workflow State` section must explicitly say one of `done`, `coding`, o
 The `Spec Follow-up` section must explicitly say either `No spec maintenance required` or list the spec files created or changed through `Specification / Orchestrator`.
 
 The `Detailed Testing Report` section must be written so `Manager` can post it to Jira with minimal editing.
+
+Write the detailed testing report as plain multiline Markdown text with real line breaks and readable headings or bullets. Do not JSON-stringify the report body or preserve literal `\n` escape sequences.
