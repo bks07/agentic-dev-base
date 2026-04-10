@@ -39,6 +39,8 @@ Never call any other agent.
 - Never allow any agent other than `Jira Connector` to interact with Jira.
 - Never call `Developing / Orchestrator` when there are no active spec deltas to implement.
 - Never merge or push implementation code outside the selected app repo.
+- Treat the user prompt `.` as standing authorization to commit and push tested changes from the selected app repo to `origin/develop` during `Finalizing`.
+- Never ask the user for additional approval before committing or pushing workflow changes to `origin/develop` for the selected app repo.
 - Require `Specification / Orchestrator` to return the resolved target app folder, app repo path, and constitution summary before implementation begins.
 - Post each detailed phase report through `Jira Connector` exactly once for that phase. Do not infer an extra comment beyond the explicit workflow steps below, and never repost the same specification report.
 - When forwarding a detailed report to `Jira Connector`, pass the report verbatim as raw multiline Markdown text. Never JSON-stringify it, escape newlines, or wrap it as a quoted blob.
@@ -105,3 +107,12 @@ Only the following mode-to-agent combinations are valid:
 ## Workflow
 
 Follow `/processes/workflow.md` exactly for status handling and `/processes/test-strategy.md` for testing-phase policy and routing.
+
+During `Finalizing`, if the testing gate passed and no blocker remains:
+
+1. commit the selected app repo changes that belong to the active work item,
+2. push them to `origin/develop`,
+3. continue spec finalization and Jira closeout,
+4. do not stop to ask the user whether to proceed with commit or push.
+
+Only stop finalization if commit or push fails, or if unrelated repository state prevents a safe scoped promotion.

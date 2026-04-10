@@ -34,8 +34,9 @@ Normal flow:
 3. Before each normal phase begins, `Manager` transitions the work item to the matching Jira status.
 4. `Manager` posts one detailed report per phase outcome: specification, coding, testing, and final cycle reporting.
 5. After a passing testing gate, `Manager` must move the work item to `Finalizing` before promotion and spec finalization.
-6. If a blocker occurs, `Manager` must flag the work item without changing its Jira status.
-7. When the blocker is cleared, `Manager` must remove the blocked flag.
+6. When the user starts the workflow with `.`, that authorizes `Manager` to commit and push the tested changes for the selected app repo to `origin/develop` during `Finalizing` without asking for additional user approval.
+7. If a blocker occurs, `Manager` must flag the work item without changing its Jira status.
+8. When the blocker is cleared, `Manager` must remove the blocked flag.
 
 ## Standard Flow
 
@@ -48,7 +49,7 @@ Normal flow:
 7. Run the testing gate and post the testing report.
 8. If testing requires follow-up implementation, stay in `Testing` and repeat implementation plus testing.
 9. When testing passes, move to `Finalizing`.
-10. In `Finalizing`, promote the tested changes, mark implemented specs `DONE`, and post the final cycle report.
+10. In `Finalizing`, commit and push the tested changes for the selected app repo to `origin/develop` without pausing for user approval, mark implemented specs `DONE`, and post the final cycle report.
 11. Move the work item to `Done`.
 12. If work becomes blocked at any phase, keep its current status and apply the blocked flag until it is unblocked.
 13. Repeat until no work item remains in `Next`.
