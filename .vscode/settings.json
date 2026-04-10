@@ -1,3 +1,5 @@
 {
-  "chat.useCustomAgentHooks": true
+  "chat.useCustomAgentHooks": true,
+  "chat.agent.maxRequests": 200,
+  "github.copilot.chat.agent.autoFix": true 
 }

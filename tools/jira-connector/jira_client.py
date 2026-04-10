@@ -51,6 +51,10 @@ def load_config() -> dict:
             "JIRA_TESTING_STATUS",
             workflow.get("testing", work_item.get("testing_status", "Testing")),
         ),
+        "finalizing": os.environ.get(
+            "JIRA_FINALIZING_STATUS",
+            workflow.get("finalizing", work_item.get("finalizing_status", "Finalizing")),
+        ),
         "blocked": os.environ.get(
             "JIRA_BLOCKED_STATUS",
             workflow.get("blocked", work_item.get("blocked_status", "Blocked")),
@@ -83,6 +87,7 @@ def load_config() -> dict:
         "specifying_status": workflow_statuses["specifying"],
         "coding_status": workflow_statuses["coding"],
         "testing_status": workflow_statuses["testing"],
+        "finalizing_status": workflow_statuses["finalizing"],
         "blocked_status": workflow_statuses["blocked"],
         "done_status": workflow_statuses["done"],
         "workflow_statuses": workflow_statuses,

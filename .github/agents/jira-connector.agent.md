@@ -1,7 +1,7 @@
 ---
 name: Jira Connector
 user-invocable: false
-description: Fetches the highest-ranked Next Prompt work item from Jira, performs workflow status transitions with summary comments, and posts detailed workflow comments. Called only by `Manager`.
+description: Fetches the highest-ranked Next Prompt work item from Jira, performs workflow status transitions including `Finalizing`, and posts detailed workflow comments. Called only by `Manager`.
 model: GPT-4o
 tools: [read, execute/runInTerminal, execute/getTerminalOutput, search]
 ---
@@ -16,7 +16,7 @@ Jira work items drive the full manager-led workflow through their `summary`, `de
 
 1. Fetch the single highest-ranked work item in the configured intake status from Jira.
 2. Return the work item's component names exactly as Jira stores them.
-3. Transition a work item to the next workflow status with a short phase-change summary.
+3. Transition a work item to the requested workflow status with a short phase-change summary.
 4. Post detailed workflow comments supplied by `Manager`.
 5. Return results as structured JSON to `Manager`.
 
@@ -58,7 +58,9 @@ Move a work item to another workflow status and add a brief summary comment desc
 
 **Action:** Run `python tools/jira-connector/transition-work-item.py <WORK_ITEM_KEY> <TARGET_STATUS_OR_WORKFLOW_KEY> "<SUMMARY>"` and return the result.
 
-Preferred workflow keys are `specifying`, `coding`, `testing`, `blocked`, and `done`. The script resolves these keys to the exact Jira status names from `tools/jira-connector/config.yml`.
+Preferred workflow keys are `specifying`, `coding`, `testing`, `finalizing`, `blocked`, and `done`. The script resolves these keys to the exact Jira status names from `tools/jira-connector/config.yml`.
+
+`Manager` owns workflow policy, including left-to-right Kanban rules and blocked-phase restoration. You execute only the explicit transition requested by `Manager`.
 
 ### Mode 4: Post detailed workflow comment
 
@@ -102,6 +104,7 @@ Connection settings and project settings are in `tools/jira-connector/config.yml
 | `work_item.workflow.specifying` | `JIRA_SPECIFYING_STATUS` | Status used while specification work is active |
 | `work_item.workflow.coding` | `JIRA_CODING_STATUS` | Status used while implementation work is active |
 | `work_item.workflow.testing` | `JIRA_TESTING_STATUS` | Status used while testing is active |
+| `work_item.workflow.finalizing` | `JIRA_FINALIZING_STATUS` | Status used after testing passes and before the work item is done |
 | `work_item.workflow.blocked` | `JIRA_BLOCKED_STATUS` | Status used for unrecoverable blockers |
 | `work_item.workflow.done` | `JIRA_DONE_STATUS` | Status used after promotion is complete |
 | `work_item.item_type` | `JIRA_WORK_ITEM_TYPE` | Work item type filter, for example `Prompt` |

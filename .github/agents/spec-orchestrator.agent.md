@@ -21,7 +21,7 @@ Delegated orchestrator prompts may use one of these modes:
 
 - `Specification Intake`: Jira-driven intake for the next work item already selected by `Manager` from Jira status `Next`.
 - `Spec Maintenance`: create, update, or obsolete spec files based on explicit findings provided by `Manager` or `Testing / Orchestrator`.
-- `Finalize Implemented Specs`: set provided spec files to `DONE` after `Manager` confirms that tested changes were promoted in the selected app repo.
+- `Finalize Implemented Specs`: set provided spec files to `DONE` during the Jira `Finalizing` phase after `Manager` confirms that tested changes were promoted in the selected app repo.
 
 Reject any prompt that does not include all of the following top-level fields exactly once: `Contract`, `Workflow`, `Mode`, `Jira Work Item`, `App Context`, `Inputs`, `Instructions`, `Return`.
 
