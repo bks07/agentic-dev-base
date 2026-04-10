@@ -12,6 +12,7 @@ project:
 # Work item selection settings used by spec agents
 work_item:
   item_type: Prompt
+  application_field: customfield_10119
   workflow:
     next: Next
     specifying: Specifying

@@ -3,7 +3,7 @@
 
 Returns one JSON object with the work item's key, summary, status,
 blocked state,
-work item type, component names, and description text extracted from
+work item type, application value, and description text extracted from
 the Jira Atlassian Document Format.
 If no matching work item is in the configured intake status, exits with
 code 0 and prints null.
@@ -22,14 +22,14 @@ Example output:
             "is_blocked": false,
       "work_item_type": "Prompt",
       "description": "As an employee I want ...",
-      "components": ["Team Availability Matrix"]
+    "application": "Team Availability Matrix"
     }
 """
 
 import json
 
 from jira_client import (
-    extract_component_names,
+    extract_application_value,
     extract_description_text,
     is_work_item_blocked,
     load_config,
@@ -43,8 +43,9 @@ def main() -> None:
     project_key = cfg["project_key"]
     work_item_type = cfg["work_item_type"]
     next_status = cfg.get("next_status", cfg["ready_status"])
+    application_field = cfg["application_field"]
     blocked_flag_field = resolve_blocked_flag_field(cfg)
-    fields = ["summary", "status", "description", "issuetype", "components"]
+    fields = ["summary", "status", "description", "issuetype", application_field]
     if blocked_flag_field:
         fields.append(blocked_flag_field)
 
@@ -68,7 +69,7 @@ def main() -> None:
         "is_blocked": is_work_item_blocked(cfg, fields),
         "work_item_type": fields.get("issuetype", {}).get("name"),
         "description": extract_description_text(fields.get("description")),
-        "components": extract_component_names(fields.get("components")),
+        "application": extract_application_value(fields.get(application_field)),
     }
 
     print(json.dumps(result, indent=2))

@@ -67,6 +67,10 @@ def load_config() -> dict:
         "JIRA_WORK_ITEM_TYPE",
         work_item.get("item_type", work_item.get("issue_type", "Prompt")),
     )
+    application_field = os.environ.get(
+        "JIRA_APPLICATION_FIELD",
+        work_item.get("application_field", "customfield_10119"),
+    ).strip()
 
     if not base_url or not user_email or not api_token:
         print(
@@ -92,6 +96,7 @@ def load_config() -> dict:
         "blocked_flag_field": blocked_flag_field,
         "blocked_flag_value": blocked_flag_value,
         "work_item_type": work_item_type,
+        "application_field": application_field,
     }
 
 
@@ -105,7 +110,7 @@ def _session(cfg: dict) -> requests.Session:
 def fetch_work_item(cfg: dict, work_item_key: str) -> dict:
     session = _session(cfg)
     url = f"{cfg['base_url']}/rest/api/3/issue/{work_item_key}"
-    fields = ["summary", "status", "description", "issuetype", "components"]
+    fields = ["summary", "status", "description", "issuetype", cfg["application_field"]]
     blocked_flag_field = resolve_blocked_flag_field(cfg)
     if blocked_flag_field:
         fields.append(blocked_flag_field)
@@ -118,7 +123,7 @@ def fetch_work_item(cfg: dict, work_item_key: str) -> dict:
 def search_work_items(
     cfg: dict,
     jql: str,
-    fields: str = "summary,status,description,issuetype,components",
+    fields: str = "summary,status,description,issuetype",
     max_results: int = 50,
 ) -> list[dict]:
     session = _session(cfg)
@@ -413,16 +418,26 @@ def extract_description_text(description: dict | None) -> str:
     return "\n".join(parts)
 
 
-def extract_component_names(components: list[dict] | None) -> list[str]:
-    if not components:
-        return []
+def extract_application_value(value: object) -> str | None:
+    if isinstance(value, str):
+        stripped = value.strip()
+        return stripped or None
 
-    names: list[str] = []
-    for component in components:
-        name = component.get("name")
-        if isinstance(name, str) and name:
-            names.append(name)
-    return names
+    if isinstance(value, dict):
+        for key in ("value", "name"):
+            candidate = value.get(key)
+            if isinstance(candidate, str) and candidate.strip():
+                return candidate.strip()
+        return None
+
+    if isinstance(value, list):
+        for item in value:
+            extracted = extract_application_value(item)
+            if extracted:
+                return extracted
+        return None
+
+    return None
 
 
 def resolve_workflow_status(cfg: dict, status_or_key: str) -> str:

@@ -1,7 +1,7 @@
 ---
 name: Specification / Orchestrator
 user-invocable: false
-description: Orchestrates specification lifecycle work across `Specification / Planner`, specialist scribes, and `Specification / Status`. It consumes structured delegation prompts from `Manager`, resolves the target application under `/apps` from Jira components using `/apps/component-mapping.yml`, reads that app's `constitution.md`, and keeps all code-context inspection limited to the selected app repo.
+description: Orchestrates specification lifecycle work across `Specification / Planner`, specialist scribes, and `Specification / Status`. It consumes structured delegation prompts from `Manager`, resolves the target application under `/apps` from the Jira `Application` field using `/apps/application-mapping.yml`, reads that app's `constitution.md`, and keeps all code-context inspection limited to the selected app repo.
 model: Claude Opus 4.6
 tools: [vscode/memory, execute/getTerminalOutput, execute/awaitTerminal, execute/runInTerminal, read/readFile, search, agent]
 agents: [Specification / Planner, Specification / Code Inspector, Specification / Scribe Bugfix, Specification / Scribe Story, Specification / Scribe Rebrush, Specification / Scribe Technical Initiative, Specification / Status]
@@ -42,7 +42,7 @@ Require:
 7. Use `Specification / Status` as the only way to update spec lifecycle frontmatter.
 8. When called by another orchestrator, act as the only contact point to the specification sub-agents.
 9. Use `vscode/memory` to track progress and context.
-10. Resolve exactly one target app before planning by matching Jira component names against `/apps/component-mapping.yml`.
+10. Resolve exactly one target app before planning by matching the Jira `Application` field value against `/apps/application-mapping.yml`.
 11. Once an app is selected, never inspect code in any other app repo.
 12. Spec files remain under `specs/`, but all implementation-context reading must be limited to the selected app repo and its `constitution.md`.
 13. Never interact with Jira directly. `Manager` owns all Jira comments and status transitions through `Jira Connector`.
@@ -57,15 +57,15 @@ Require `Manager` to provide exactly one Jira work item with:
 - `key`
 - `summary`
 - `description`
-- `components`
+- `application`
 
 If any of these are missing, stop and report the blocker.
 
 ### Step 2: Resolve Target App
 
-1. Read `/apps/component-mapping.yml`.
-2. Match the Jira component names exactly against `components[].name` in that file.
-3. If no Jira component is present, or no mapping exists, or the mapped components point to more than one app folder, stop and return a blocker for `Manager` to report and transition in Jira.
+1. Read `/apps/application-mapping.yml`.
+2. Match the Jira `Application` field value exactly against `applications[].name` in that file.
+3. If no Jira `Application` field value is present, or no mapping exists, or the mapping points to more than one app folder, stop and return a blocker for `Manager` to report and transition in Jira.
 4. Read `/apps/<app_folder>/constitution.md` for the resolved app.
 5. Store the app folder name, app repo path, and a short constitution summary for later delegations.
 
@@ -80,7 +80,7 @@ If any of these are missing, stop and report the blocker.
 
 Delegate to **`Specification / Planner`** with:
 - the full prompt text,
-- Jira component names,
+- Jira application value,
 - `specs/index.md` context,
 - the resolved app folder and app repo path,
 - the selected app's `constitution.md` context.

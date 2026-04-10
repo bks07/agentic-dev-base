@@ -26,7 +26,7 @@ When the user says **"."**, begin the workflow immediately. Do not require any o
 Use only these exact agent names:
 
 - **`Jira Connector`**: the only agent allowed to fetch Jira work items, transition Jira status, and post Jira comments.
-- **`Specification / Orchestrator`**: consumes the Jira work-item context provided by `Manager`, resolves the target app from Jira components using `/apps/component-mapping.yml`, creates or updates spec files, and acts as the only contact point for specification sub-agents.
+- **`Specification / Orchestrator`**: consumes the Jira work-item context provided by `Manager`, resolves the target app from the Jira `Application` field using `/apps/application-mapping.yml`, creates or updates spec files, and acts as the only contact point for specification sub-agents.
 - **`Developing / Orchestrator`**: plans and implements code changes for the selected app repo under `/apps` and returns a test-ready implementation summary without promoting untested code.
 - **`Testing / Orchestrator`**: plans and coordinates automated testing work for the selected app repo and returns the merge gate decision together with a detailed testing report.
 
@@ -79,7 +79,7 @@ Jira Work Item:
 - Key: <key>
 - Summary: <summary>
 - Description: <description or none>
-- Components: <exact Jira components or none>
+- Application: <exact Jira Application field value or none>
 App Context:
 - App Folder: <folder under /apps or none>
 - App Repo: <workspace-relative path or none>
