@@ -54,9 +54,9 @@ Use this contract for every Jira action:
 
 ```text
 Contract: Manager-Jira/v1
-Mode: <Fetch Next Work Item|Fetch Work Item|Transition Work Item|Post Detailed Comment>
+Mode: <Fetch Next Work Item|Fetch Work Item|Transition Work Item|Set Blocked Flag|Clear Blocked Flag|Post Detailed Comment>
 Work Item Key: <key or none>
-Target Status: <next|specifying|coding|testing|finalizing|blocked|done or exact Jira status>
+Target Status: <next|specifying|coding|testing|finalizing|done or exact Jira status>
 Summary: <brief transition summary or none>
 Detailed Report:
 <raw multiline Markdown report or none>

@@ -2,6 +2,7 @@
 """Fetch the single highest-ranked work item in the intake status.
 
 Returns one JSON object with the work item's key, summary, status,
+blocked state,
 work item type, component names, and description text extracted from
 the Jira Atlassian Document Format.
 If no matching work item is in the configured intake status, exits with
@@ -18,6 +19,7 @@ Example output:
       "key": "ASD-12",
       "summary": "Calendar virtual values",
     "status": "Next",
+            "is_blocked": false,
       "work_item_type": "Prompt",
       "description": "As an employee I want ...",
       "components": ["Team Availability Matrix"]
@@ -26,7 +28,14 @@ Example output:
 
 import json
 
-from jira_client import extract_component_names, extract_description_text, load_config, search_work_items
+from jira_client import (
+    extract_component_names,
+    extract_description_text,
+    is_work_item_blocked,
+    load_config,
+    resolve_blocked_flag_field,
+    search_work_items,
+)
 
 
 def main() -> None:
@@ -34,13 +43,17 @@ def main() -> None:
     project_key = cfg["project_key"]
     work_item_type = cfg["work_item_type"]
     next_status = cfg.get("next_status", cfg["ready_status"])
+    blocked_flag_field = resolve_blocked_flag_field(cfg)
+    fields = ["summary", "status", "description", "issuetype", "components"]
+    if blocked_flag_field:
+        fields.append(blocked_flag_field)
 
     jql = (
         f'project = "{project_key}" AND issuetype = "{work_item_type}" '
         f'AND status = "{next_status}" ORDER BY Rank ASC'
     )
 
-    work_items = search_work_items(cfg, jql, max_results=1)
+    work_items = search_work_items(cfg, jql, fields=",".join(fields), max_results=1)
 
     if not work_items:
         print(json.dumps(None))
@@ -52,6 +65,7 @@ def main() -> None:
         "key": work_item.get("key"),
         "summary": fields.get("summary"),
         "status": fields.get("status", {}).get("name"),
+        "is_blocked": is_work_item_blocked(cfg, fields),
         "work_item_type": fields.get("issuetype", {}).get("name"),
         "description": extract_description_text(fields.get("description")),
         "components": extract_component_names(fields.get("components")),

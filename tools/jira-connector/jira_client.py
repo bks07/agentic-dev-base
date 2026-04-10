@@ -18,6 +18,7 @@ def load_config() -> dict:
     project = cfg.get("project", {})
     work_item = cfg.get("work_item", cfg.get("epic", {}))
     workflow = work_item.get("workflow", {})
+    blocking = cfg.get("blocking", {})
 
     base_url = os.environ.get("JIRA_BASE_URL", jira.get("base_url", ""))
     user_email = os.environ.get("JIRA_USER_EMAIL", jira.get("user_email", ""))
@@ -55,15 +56,13 @@ def load_config() -> dict:
             "JIRA_FINALIZING_STATUS",
             workflow.get("finalizing", work_item.get("finalizing_status", "Finalizing")),
         ),
-        "blocked": os.environ.get(
-            "JIRA_BLOCKED_STATUS",
-            workflow.get("blocked", work_item.get("blocked_status", "Blocked")),
-        ),
         "done": os.environ.get(
             "JIRA_DONE_STATUS",
             workflow.get("done", work_item.get("done_status", "Done")),
         ),
     }
+    blocked_flag_field = os.environ.get("JIRA_BLOCKED_FLAG_FIELD", blocking.get("flag_field", "")).strip()
+    blocked_flag_value = os.environ.get("JIRA_BLOCKED_FLAG_VALUE", blocking.get("flag_value", "Impediment"))
     work_item_type = os.environ.get(
         "JIRA_WORK_ITEM_TYPE",
         work_item.get("item_type", work_item.get("issue_type", "Prompt")),
@@ -88,9 +87,10 @@ def load_config() -> dict:
         "coding_status": workflow_statuses["coding"],
         "testing_status": workflow_statuses["testing"],
         "finalizing_status": workflow_statuses["finalizing"],
-        "blocked_status": workflow_statuses["blocked"],
         "done_status": workflow_statuses["done"],
         "workflow_statuses": workflow_statuses,
+        "blocked_flag_field": blocked_flag_field,
+        "blocked_flag_value": blocked_flag_value,
         "work_item_type": work_item_type,
     }
 
@@ -105,7 +105,11 @@ def _session(cfg: dict) -> requests.Session:
 def fetch_work_item(cfg: dict, work_item_key: str) -> dict:
     session = _session(cfg)
     url = f"{cfg['base_url']}/rest/api/3/issue/{work_item_key}"
-    params = {"fields": "summary,status,description,issuetype,components"}
+    fields = ["summary", "status", "description", "issuetype", "components"]
+    blocked_flag_field = resolve_blocked_flag_field(cfg)
+    if blocked_flag_field:
+        fields.append(blocked_flag_field)
+    params = {"fields": ",".join(fields)}
     resp = session.get(url, params=params)
     resp.raise_for_status()
     return resp.json()
@@ -138,6 +142,37 @@ def search_work_items(
             break
 
     return all_work_items
+
+
+def resolve_blocked_flag_field(cfg: dict) -> str | None:
+    configured = cfg.get("blocked_flag_field", "").strip()
+    if configured:
+        return configured
+
+    session = _session(cfg)
+    url = f"{cfg['base_url']}/rest/api/3/field"
+    resp = session.get(url)
+    resp.raise_for_status()
+
+    for field in resp.json():
+        name = field.get("name")
+        if isinstance(name, str) and name.lower() == "flagged":
+            field_id = field.get("id")
+            if isinstance(field_id, str) and field_id:
+                return field_id
+
+    return None
+
+
+def is_work_item_blocked(cfg: dict, fields: dict) -> bool:
+    blocked_flag_field = resolve_blocked_flag_field(cfg)
+    if not blocked_flag_field:
+        return False
+
+    value = fields.get(blocked_flag_field)
+    if isinstance(value, list):
+        return len(value) > 0
+    return bool(value)
 
 
 def _normalize_comment_body(body: str) -> str:
@@ -333,6 +368,33 @@ def transition_work_item(cfg: dict, work_item_key: str, target_status: str) -> N
 
     resp = session.post(url, json={"transition": {"id": match["id"]}})
     resp.raise_for_status()
+
+
+def set_blocked_flag(cfg: dict, work_item_key: str, blocked: bool) -> None:
+    blocked_flag_field = resolve_blocked_flag_field(cfg)
+    if not blocked_flag_field:
+        print("Error: Could not resolve Jira blocked flag field. Configure blocking.flag_field or JIRA_BLOCKED_FLAG_FIELD.", file=sys.stderr)
+        sys.exit(1)
+
+    session = _session(cfg)
+    url = f"{cfg['base_url']}/rest/api/3/issue/{work_item_key}"
+    value = ([{"value": cfg.get("blocked_flag_value", "Impediment")}] if blocked else [])
+    payloads = [
+        {"fields": {blocked_flag_field: value}},
+        {"update": {blocked_flag_field: [{"set": value}]}},
+    ]
+
+    last_error: requests.HTTPError | None = None
+    for payload in payloads:
+        resp = session.put(url, json=payload)
+        try:
+            resp.raise_for_status()
+            return
+        except requests.HTTPError as error:
+            last_error = error
+
+    if last_error is not None:
+        raise last_error
 
 
 def extract_description_text(description: dict | None) -> str:

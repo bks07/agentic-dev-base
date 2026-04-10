@@ -18,5 +18,8 @@ work_item:
     coding: Coding
     testing: Testing
     finalizing: Finalizing
-    blocked: Blocked
     done: Done
+
+blocking:
+  flag_field: ""
+  flag_value: Impediment

@@ -11,7 +11,7 @@ Example:
 import json
 import sys
 
-from jira_client import extract_component_names, extract_description_text, fetch_work_item, load_config
+from jira_client import extract_component_names, extract_description_text, fetch_work_item, is_work_item_blocked, load_config
 
 
 def main() -> None:
@@ -28,6 +28,7 @@ def main() -> None:
         "key": work_item.get("key"),
         "summary": fields.get("summary"),
         "status": fields.get("status", {}).get("name"),
+        "is_blocked": is_work_item_blocked(cfg, fields),
         "work_item_type": fields.get("issuetype", {}).get("name"),
         "description": extract_description_text(fields.get("description")),
         "components": extract_component_names(fields.get("components")),

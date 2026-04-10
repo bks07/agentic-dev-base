@@ -8,8 +8,6 @@ Normal flow:
 
 `Next -> Specifying -> Coding -> Testing -> Finalizing -> Done`
 
-`Blocked` is the only exception.
-
 ## Rules
 
 1. Normal transitions move only left to right.
@@ -17,8 +15,8 @@ Normal flow:
 3. If testing finds fixable implementation work, keep the work item in `Testing` and continue the implementation and testing loop there.
 4. Use `Finalizing` for all post-testing work.
 5. Move to `Done` only after finalization is complete.
-6. `Blocked` may be entered from any active phase.
-7. When resuming blocked work, first restore the work item to the phase where it was blocked.
+6. If work is blocked, keep the Jira work item in its current status and apply the blocked flag.
+7. When blocked work is unblocked, remove the blocked flag.
 
 ## Phase Definitions
 
@@ -28,7 +26,6 @@ Normal flow:
 - `Testing`: testing gate, including testing-driven implementation follow-up.
 - `Finalizing`: post-testing work, including promotion, spec finalization, and final reporting.
 - `Done`: completed work item.
-- `Blocked`: temporary exception state.
 
 ## Manager Requirements
 
@@ -37,7 +34,8 @@ Normal flow:
 3. Before each normal phase begins, `Manager` transitions the work item to the matching Jira status.
 4. `Manager` posts one detailed report per phase outcome: specification, coding, testing, and final cycle reporting.
 5. After a passing testing gate, `Manager` must move the work item to `Finalizing` before promotion and spec finalization.
-6. If a blocker occurs, `Manager` must record the blocked-from phase.
+6. If a blocker occurs, `Manager` must flag the work item without changing its Jira status.
+7. When the blocker is cleared, `Manager` must remove the blocked flag.
 
 ## Standard Flow
 
@@ -52,7 +50,8 @@ Normal flow:
 9. When testing passes, move to `Finalizing`.
 10. In `Finalizing`, promote the tested changes, mark implemented specs `DONE`, and post the final cycle report.
 11. Move the work item to `Done`.
-12. Repeat until no work item remains in `Next`.
+12. If work becomes blocked at any phase, keep its current status and apply the blocked flag until it is unblocked.
+13. Repeat until no work item remains in `Next`.
 
 ## Reporting Order
 
