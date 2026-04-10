@@ -23,11 +23,19 @@ def load_config() -> dict:
     user_email = os.environ.get("JIRA_USER_EMAIL", jira.get("user_email", ""))
     api_token = os.environ.get("JIRA_API_TOKEN", "")
     project_key = os.environ.get("JIRA_PROJECT_KEY", project.get("key", ""))
-    workflow_statuses = {
-        "ready": os.environ.get(
+    next_status = os.environ.get(
+        "JIRA_NEXT_STATUS",
+        os.environ.get(
             "JIRA_READY_STATUS",
-            workflow.get("ready", work_item.get("ready_status", "Ready")),
+            workflow.get(
+                "next",
+                workflow.get("ready", work_item.get("next_status", work_item.get("ready_status", "Next"))),
+            ),
         ),
+    )
+    workflow_statuses = {
+        "next": next_status,
+        "ready": next_status,
         "specifying": os.environ.get(
             "JIRA_SPECIFYING_STATUS",
             workflow.get(
@@ -70,6 +78,7 @@ def load_config() -> dict:
         "user_email": user_email,
         "api_token": api_token,
         "project_key": project_key,
+        "next_status": workflow_statuses["next"],
         "ready_status": workflow_statuses["ready"],
         "specifying_status": workflow_statuses["specifying"],
         "coding_status": workflow_statuses["coding"],

@@ -13,7 +13,7 @@ project:
 work_item:
   item_type: Prompt
   workflow:
-    ready: Ready
+    next: Next
     specifying: Specifying
     coding: Coding
     testing: Testing

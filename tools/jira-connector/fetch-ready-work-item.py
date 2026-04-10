@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Fetch the single highest-ranked ready work item.
+"""Fetch the single highest-ranked work item in the intake status.
 
 Returns one JSON object with the work item's key, summary, status,
 work item type, component names, and description text extracted from
 the Jira Atlassian Document Format.
-If no matching work item is in the configured ready status, exits with
+If no matching work item is in the configured intake status, exits with
 code 0 and prints null.
 
-Selection is controlled by `work_item.ready_status` and
+Selection is controlled by `work_item.workflow.next` and
 `work_item.item_type` in config.yml.
 
 Usage:
@@ -17,7 +17,7 @@ Example output:
     {
       "key": "ASD-12",
       "summary": "Calendar virtual values",
-      "status": "Ready",
+    "status": "Next",
       "work_item_type": "Prompt",
       "description": "As an employee I want ...",
       "components": ["Team Availability Matrix"]
@@ -33,11 +33,11 @@ def main() -> None:
     cfg = load_config()
     project_key = cfg["project_key"]
     work_item_type = cfg["work_item_type"]
-    ready_status = cfg["ready_status"]
+    next_status = cfg.get("next_status", cfg["ready_status"])
 
     jql = (
         f'project = "{project_key}" AND issuetype = "{work_item_type}" '
-        f'AND status = "{ready_status}" ORDER BY Rank ASC'
+        f'AND status = "{next_status}" ORDER BY Rank ASC'
     )
 
     work_items = search_work_items(cfg, jql, max_results=1)

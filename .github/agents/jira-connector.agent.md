@@ -1,7 +1,7 @@
 ---
 name: Jira Connector
 user-invocable: false
-description: Fetches the highest-ranked Ready Prompt work item from Jira, performs workflow status transitions with summary comments, and posts detailed workflow comments. Called only by `Manager`.
+description: Fetches the highest-ranked Next Prompt work item from Jira, performs workflow status transitions with summary comments, and posts detailed workflow comments. Called only by `Manager`.
 model: GPT-4o
 tools: [read, execute/runInTerminal, execute/getTerminalOutput, search]
 ---
@@ -14,7 +14,7 @@ Jira work items drive the full manager-led workflow through their `summary`, `de
 
 ## Mission
 
-1. Fetch the single highest-ranked work item in the configured ready status from Jira.
+1. Fetch the single highest-ranked work item in the configured intake status from Jira.
 2. Return the work item's component names exactly as Jira stores them.
 3. Transition a work item to the next workflow status with a short phase-change summary.
 4. Post detailed workflow comments supplied by `Manager`.
@@ -26,20 +26,22 @@ Only `Manager` may call you. Reject any workflow that implies another agent shou
 
 `Manager` calls you in one of four modes:
 
-### Mode 1: Fetch next ready Prompt work item
+Accept only structured `Manager-Jira/v1` prompts from `Manager`.
 
-Fetch the single highest-ranked work item that matches the configured ready status and configured work item type.
+### Mode 1: Fetch Next work item
+
+Fetch the single highest-ranked work item that matches the configured intake status, which defaults to Jira status `Next`, and the configured work item type.
 
 Preferred action:
 - Use the existing Jira helper scripts when they expose the needed fields.
 - If the helper script output does not include Jira components, use the same Jira connection settings from `tools/jira-connector/config.yml` together with `JIRA_API_TOKEN` from the environment and fetch the work item data directly from Jira without editing repository files.
 
-Returns a single JSON object (or `null` if no work item is ready):
+Returns a single JSON object (or `null` if no work item is available in the intake status):
 ```json
 {
   "key": "ADS-12",
   "summary": "Calendar virtual values",
-  "status": "Ready",
+  "status": "Next",
   "work_item_type": "Prompt",
   "description": "As an employee I want ...",
   "components": ["Team Availability Matrix"]
@@ -79,7 +81,7 @@ All scripts live in `tools/jira-connector/` and share a common client library (`
 
 | Script | Purpose |
 |---|---|
-| `fetch-ready-work-item.py` | Fetch the single highest-ranked work item matching the configured ready status and work item type |
+| `fetch-ready-work-item.py` | Fetch the single highest-ranked work item matching the configured intake status and work item type |
 | `fetch-work-item.py <KEY>` | Fetch a single work item by key |
 | `transition-work-item.py <KEY> <STATUS_OR_KEY> <SUMMARY>` | Transition a work item to a target status and add a summary comment |
 | `write-comment-to-work-item.py <KEY> <TEXT>` | Add a comment to a work item |
@@ -95,7 +97,8 @@ Connection settings and project settings are in `tools/jira-connector/config.yml
 | `jira.user_email` | `JIRA_USER_EMAIL` | Atlassian account email |
 | environment only | `JIRA_API_TOKEN` | Atlassian API token |
 | `project.key` | `JIRA_PROJECT_KEY` | Jira project key |
-| `work_item.workflow.ready` | `JIRA_READY_STATUS` | Status that marks a work item as ready to fetch |
+| `work_item.workflow.next` | `JIRA_NEXT_STATUS` | Intake status used when selecting the next work item to fetch |
+| `work_item.workflow.ready` | `JIRA_READY_STATUS` | Legacy alias for the intake status override |
 | `work_item.workflow.specifying` | `JIRA_SPECIFYING_STATUS` | Status used while specification work is active |
 | `work_item.workflow.coding` | `JIRA_CODING_STATUS` | Status used while implementation work is active |
 | `work_item.workflow.testing` | `JIRA_TESTING_STATUS` | Status used while testing is active |
