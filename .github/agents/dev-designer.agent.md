@@ -7,7 +7,7 @@ tools: [vscode, execute, read, 'context7/*', edit, search, web, todo]
 hooks:
    PreToolUse:
       - type: command
-         command: "python3 tools/agent-hooks/enforce_app_scope.py"
+        command: "python3 tools/agent-hooks/enforce_app_scope.py"
 ---
 
 You are the `Developing / Designer` agent. You serve as the architect of the product's design system and the director of UI/UX implementation for the selected app repo.

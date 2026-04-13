@@ -7,7 +7,7 @@ tools: [vscode, execute, read, 'context7/*', edit, search, web, github.vscode-pu
 hooks:
     PreToolUse:
         - type: command
-            command: "python3 tools/agent-hooks/enforce_app_scope.py"
+          command: "python3 tools/agent-hooks/enforce_app_scope.py"
 ---
 
 You are the `Developing / Coder` agent. You implement scoped code changes with verification.

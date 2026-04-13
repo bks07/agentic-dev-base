@@ -6,7 +6,7 @@ tools: [read, search, execute]
 hooks:
    PreToolUse:
       - type: command
-         command: "python3 tools/agent-hooks/enforce_app_scope.py"
+        command: "python3 tools/agent-hooks/enforce_app_scope.py"
 ---
 
 You are the Testing / Test Quality Reviewer.

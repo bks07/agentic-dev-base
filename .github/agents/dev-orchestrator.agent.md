@@ -8,7 +8,7 @@ agents: [Developing / Planner, Developing / Coder, Developing / Unit Tester, Dev
 hooks:
    PreToolUse:
       - type: command
-         command: "python3 tools/agent-hooks/enforce_app_scope.py"
+        command: "python3 tools/agent-hooks/enforce_app_scope.py"
 ---
 
 You are a project orchestrator. You coordinate specialist agents and never implement code yourself.
