@@ -31,11 +31,7 @@ Accept only structured `Manager-Jira/v1` prompts from `Manager`.
 
 ### Mode 1: Fetch Next work item
 
-Fetch the single highest-ranked work item that matches the configured intake status, which defaults to Jira status `Next`, and the configured work item type.
-
-Preferred action:
-- Use the existing Jira helper scripts when they expose the needed fields.
-- If the helper script output does not include the Jira `Application` field value, use the same Jira connection settings from `tools/jira-connector/config.yml` together with `JIRA_API_TOKEN` from the environment and fetch the work item data directly from Jira without editing repository files.
+Use the `jira` skill — Capability 1 (Fetch Next Work Item). If the script output does not include the Jira `Application` field value, use the same Jira connection settings from `tools/jira-connector/config.yml` together with `JIRA_API_TOKEN` from the environment and fetch the work item data directly from Jira without editing repository files.
 
 Returns a single JSON object (or `null` if no work item is available in the intake status):
 ```json
@@ -52,76 +48,31 @@ Returns a single JSON object (or `null` if no work item is available in the inta
 
 ### Mode 2: Fetch a single work item by key
 
-Return the details of one specific work item, including the `Application` field value.
+Use the `jira` skill — Capability 2 (Fetch Work Item by Key). Return the details including the `Application` field value.
 
 ### Mode 3: Transition work item to another workflow status
 
-Move a work item to another workflow status and add a brief summary comment describing why the next phase is starting.
-
-**Action:** Run `python tools/jira-connector/transition-work-item.py <WORK_ITEM_KEY> <TARGET_STATUS_OR_WORKFLOW_KEY> "<SUMMARY>"` and return the result.
-
-Preferred workflow keys are `specifying`, `coding`, `testing`, `finalizing`, and `done`. The script resolves these keys to the exact Jira status names from `tools/jira-connector/config.yml`.
+Use the `jira` skill — Capability 3 (Transition a Work Item). Add a brief summary comment describing why the next phase is starting.
 
 `Manager` owns workflow policy, including blocked-flag handling. You execute only the explicit action requested by `Manager`.
 
 ### Mode 4: Set or clear blocked flag
 
-Keep the work item in its current Jira status and update only the blocked flag.
-
-- `Set Blocked Flag`: mark the work item as blocked and add a brief summary comment.
-- `Clear Blocked Flag`: remove the blocked flag and add a brief summary comment.
-
-**Action:** Run `python tools/jira-connector/set-blocked-flag.py <WORK_ITEM_KEY> <blocked|unblocked> "<SUMMARY>"` and return the result.
+Use the `jira` skill — Capability 4 (Set or Clear Blocked Flag). Keep the work item in its current Jira status.
 
 ### Mode 5: Post detailed workflow comment
 
-Post a comment to a work item using the detailed status report provided by `Manager`. The comment may cover specification, development, testing, blocker, or final-cycle reporting. Preserve the supplied structure unless `Manager` explicitly asks you to reformat it.
+Use the `jira` skill — Capability 5 (Post a Comment). Preserve the supplied structure unless `Manager` explicitly asks you to reformat it.
 
 Treat the supplied report as raw multiline Markdown-like text. Do not JSON-stringify it, do not collapse it to one line, and do not preserve literal escape sequences such as `\n` when they are intended to be line breaks.
 
 If `Manager` supplies a detailed report and a transition summary for the same phase, post only the detailed report in Mode 5 and keep the transition summary confined to Mode 3.
 
-**Action:** Run:
-```
-python tools/jira-connector/write-comment-to-work-item.py <WORK_ITEM_KEY> --stdin <<'EOF'
-<FORMATTED_COMMENT>
-EOF
-```
+Use `--stdin` for multiline comments as documented in the skill.
 
-## Scripts
+## Scripts and Configuration
 
-All scripts live in `tools/jira-connector/` and share a common client library (`jira_client.py`). Configuration is in `tools/jira-connector/config.yml`.
-
-| Script | Purpose |
-|---|---|
-| `fetch-ready-work-item.py` | Fetch the single highest-ranked work item matching the configured intake status and work item type |
-| `fetch-work-item.py <KEY>` | Fetch a single work item by key |
-| `transition-work-item.py <KEY> <STATUS_OR_KEY> <SUMMARY>` | Transition a work item to a target status and add a summary comment |
-| `set-blocked-flag.py <KEY> <blocked|unblocked> <SUMMARY>` | Set or clear the blocked flag and add a summary comment |
-| `write-comment-to-work-item.py <KEY> <TEXT>` | Add a comment to a work item |
-| `jira_client.py` | Shared library — authentication, REST calls, ADF text extraction, transitions |
-
-## Configuration
-
-Connection settings and project settings are in `tools/jira-connector/config.yml`. Environment variables override YAML values:
-
-| YAML path | Env var override | Purpose |
-|---|---|---|
-| `jira.base_url` | `JIRA_BASE_URL` | Jira Cloud instance URL |
-| `jira.user_email` | `JIRA_USER_EMAIL` | Atlassian account email |
-| environment only | `JIRA_API_TOKEN` | Atlassian API token |
-| `project.key` | `JIRA_PROJECT_KEY` | Jira project key |
-| `work_item.workflow.next` | `JIRA_NEXT_STATUS` | Intake status used when selecting the next work item to fetch |
-| `work_item.workflow.ready` | `JIRA_READY_STATUS` | Legacy alias for the intake status override |
-| `work_item.workflow.specifying` | `JIRA_SPECIFYING_STATUS` | Status used while specification work is active |
-| `work_item.workflow.coding` | `JIRA_CODING_STATUS` | Status used while implementation work is active |
-| `work_item.workflow.testing` | `JIRA_TESTING_STATUS` | Status used while testing is active |
-| `work_item.workflow.finalizing` | `JIRA_FINALIZING_STATUS` | Status used after testing passes and before the work item is done |
-| `work_item.workflow.done` | `JIRA_DONE_STATUS` | Status used after promotion is complete |
-| `work_item.application_field` | `JIRA_APPLICATION_FIELD` | Jira field id that stores the target application, for example `customfield_10119` |
-| `blocking.flag_field` | `JIRA_BLOCKED_FLAG_FIELD` | Optional Jira field id for the blocked flag; auto-detected from `Flagged` when omitted |
-| `blocking.flag_value` | `JIRA_BLOCKED_FLAG_VALUE` | Value used when setting the blocked flag |
-| `work_item.item_type` | `JIRA_WORK_ITEM_TYPE` | Work item type filter, for example `Prompt` |
+All scripts, configuration, and environment variable overrides are documented in the `jira` skill. Scripts live in `tools/jira-connector/` and share `jira_client.py`. Configuration is in `tools/jira-connector/config.yml`.
 
 ## Non-Negotiable Rules
 

@@ -23,11 +23,9 @@ You never edit files. You never invoke any agent. You never write code or produc
 
 ## Scribe Assignment Rules
 
-1. Bugfix docs -> `Specification / Scribe Bugfix`.
-2. Product-area user stories -> `Specification / Scribe Story`.
-3. Rebrush docs -> `Specification / Scribe Rebrush`.
-4. Technical initiatives -> `Specification / Scribe Technical Initiative`.
-5. Multi-type requests must be split into separate tasks.
+1. Assign `Specification / Scribe` for all spec types (bugfix, story, rebrush, technical initiative).
+2. Include the spec type in each task so the scribe selects the correct folder, naming convention, and template.
+3. Multi-type requests must be split into separate tasks, each with its own spec type.
 
 ## Planning Rules
 
@@ -47,7 +45,7 @@ You never edit files. You never invoke any agent. You never write code or produc
 	- Task ID
 	- Objective
 	- Document type
-	- Owner scribe
+	- Owner scribe: `Specification / Scribe` with spec type
 	- App folder and app repo path
 	- Files/folders likely affected
 	- Dependencies
@@ -63,7 +61,7 @@ You never edit files. You never invoke any agent. You never write code or produc
 ## Completion Checklist
 
 1. Every requested outcome maps to at least one task.
-2. Each task has exactly one scribe owner.
+2. Each task has `Specification / Scribe` as owner with the spec type specified.
 3. Dependencies are explicit and consistent.
 4. Remove/obsolete tasks include dependency-check requirements.
 5. Status update needs are clear (`NEW`, `CHANGED`, `OBSOLETE`).

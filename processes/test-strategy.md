@@ -10,9 +10,9 @@ This file defines the authoritative testing policy for the testing agents. Workf
 
 ## Test Layers
 
-- Unit and component tests: pure logic and UI behavior without browser-level orchestration.
-- Integration tests: framework or service integration, including real PostgreSQL when persistence behavior is the risk.
-- E2E tests: browser-level user journeys, preferably with Playwright.
+- Unit and component tests: written by `Developing / Unit Tester` during the Coding phase alongside implementation. Run and validated by `Testing / Test Engineer` during the Testing phase.
+- Integration tests: added by `Testing / Test Engineer` during the Testing phase to cover seams, services, and edge cases not covered by unit tests.
+- E2E tests: browser-level user journeys, preferably with Playwright, written by `Testing / UI Tester` during the Testing phase.
 - CI: Ubuntu-based automation of the selected app repo's real test commands.
 
 ## Core Rules
@@ -28,7 +28,9 @@ This file defines the authoritative testing policy for the testing agents. Workf
 
 ## Role Ownership
 
-- `Testing / Test Engineer`: unit, component, and non-browser integration tests.
+- `Developing / Unit Tester`: writes unit and component tests during the Coding phase for every implementation task.
+- `Testing / Planner`: produces the execution-ready test plan from implementation deliverables before specialists begin work.
+- `Testing / Test Engineer`: runs dev-written unit tests, validates coverage, and adds integration or edge-case tests to fill gaps.
 - `Testing / UI Tester`: E2E and browser-level journeys.
 - `Testing / CI Engineer`: CI workflows, services, caches, and test artifacts.
 - `Testing / Test Quality Reviewer`: independent merge-readiness review.
@@ -37,12 +39,13 @@ This file defines the authoritative testing policy for the testing agents. Workf
 
 ## Routing Rules
 
-1. Send unit, component, and integration work to `Testing / Test Engineer`.
-2. Send browser journeys to `Testing / UI Tester`.
-3. Send CI workflow work to `Testing / CI Engineer`.
-4. Always send the resulting testing change set to `Testing / Test Quality Reviewer` before approving promotion.
-5. Route spec follow-up through `Specification / Orchestrator`, not directly to spec sub-agents.
-6. Use `Developing / Coder` only as a fallback writer with exact file content and exact file paths.
+1. Start the testing phase by sending implementation deliverables to `Testing / Planner` for test plan creation.
+2. Send dev-written unit test execution, coverage analysis, and integration test work to `Testing / Test Engineer`.
+3. Send browser journeys to `Testing / UI Tester`.
+4. Send CI workflow work to `Testing / CI Engineer`.
+5. Always send the resulting testing change set to `Testing / Test Quality Reviewer` before approving promotion.
+6. Route spec follow-up through `Specification / Orchestrator`, not directly to spec sub-agents.
+7. Use `Developing / Coder` only as a fallback writer with exact file content and exact file paths.
 
 ## Testing Gate Output
 

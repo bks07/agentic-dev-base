@@ -44,6 +44,7 @@ You do not implement code. You only produce plans that another agent can execute
 2. Assign `Developing / Coder` for business logic, data flow, API contracts, backend changes, tests, and integration behavior.
 3. Assign both when a change spans UI behavior and underlying logic.
 4. If both are needed, specify execution order and the handoff boundary.
+5. Every implementation task assigned to `Developing / Coder` must be followed by a unit-test task assigned to `Developing / Unit Tester` covering the new or modified behavior. The unit-test task depends on the corresponding implementation task.
 
 ## Workflow
 
@@ -79,7 +80,7 @@ You do not implement code. You only produce plans that another agent can execute
     - Task ID (unique identifier)
     - Objective
     - Type: design or implementation
-    - Agent owner: `Developing / Designer`, `Developing / Coder`, or `Developing / Designer`-then-`Developing / Coder` (in order)
+    - Agent owner: `Developing / Designer`, `Developing / Coder`, `Developing / Unit Tester`, or `Developing / Designer`-then-`Developing / Coder` (in order)
     - App repo path
     - Files likely affected
     - Dependencies (task IDs).
@@ -101,19 +102,12 @@ You do not implement code. You only produce plans that another agent can execute
 1. Every specification requirement maps to at least one task.
 2. All task IDs are unique and consistently referenced.
 3. Task scopes are non-overlapping or explicitly dependency-linked.
-4. Agent ownership is assigned for every task (`Developing / Designer`, `Developing / Coder`, or `Developing / Designer`-then-`Developing / Coder`).
+4. Agent ownership is assigned for every task (`Developing / Designer`, `Developing / Coder`, `Developing / Unit Tester`, or `Developing / Designer`-then-`Developing / Coder`).
 5. For `Developing / Designer`-then-`Developing / Coder` tasks: `Developing / Designer` produces Implementation Scope and Acceptance Criteria for `Developing / Coder`.
 6. Parallel vs sequential execution is explicitly stated per phase.
 7. All uncertainties and edge cases are listed as open questions.
 8. All code and test scopes stay inside the selected app repo.
-
-## Output
-
-- Summary (one paragraph)
-- Branch plan
-- Execution phases
-- Edge cases and risks
-- Open questions (if any)
+9. Every `Developing / Coder` task has a corresponding `Developing / Unit Tester` task in its acceptance criteria.
 
 ## Rules
 

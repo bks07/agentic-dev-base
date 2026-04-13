@@ -72,7 +72,7 @@ If this task includes a `Developing / Designer` handoff:
 
 Run validation relevant to modified code when feasible:
 
-1. Targeted tests for changed behavior.
+1. Pre-existing tests affected by the changes.
 2. Lint, type, and build checks affected by touched files.
 3. Basic runtime sanity check when applicable.
 
