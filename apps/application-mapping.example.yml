@@ -1,0 +1,5 @@
+applications:
+  - name: Examle Application 1
+    app_folder: example-application-1
+  - name: Example Application 2
+    app_folder: example-application-2

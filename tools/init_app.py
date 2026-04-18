@@ -100,11 +100,19 @@ def validate_application_name(application_name: str) -> str:
     return normalized
 
 
-def read_application_mapping() -> str:
-    if not APPLICATION_MAPPING_FILE.exists():
-        return "applications:\n"
+def ensure_application_mapping_file() -> str:
+    APPLICATION_MAPPING_FILE.parent.mkdir(parents=True, exist_ok=True)
 
-    mapping_text = APPLICATION_MAPPING_FILE.read_text(encoding="utf-8")
+    if not APPLICATION_MAPPING_FILE.exists():
+        initial_content = "applications:\n"
+        APPLICATION_MAPPING_FILE.write_text(initial_content, encoding="utf-8")
+        return initial_content
+
+    return APPLICATION_MAPPING_FILE.read_text(encoding="utf-8")
+
+
+def read_application_mapping() -> str:
+    mapping_text = ensure_application_mapping_file()
     if mapping_text.strip() and "applications:" not in mapping_text:
         raise InitAppError(
             f"Invalid application mapping file format: {APPLICATION_MAPPING_FILE}"
@@ -245,7 +253,8 @@ def build_parser() -> argparse.ArgumentParser:
             "Clone a new application repository into /apps, switch to the develop "
             "branch, seed constitution.md from the workspace template, create "
             "the default specs and docs scaffolding, and register the app in "
-            "apps/application-mapping.yml for Jira Application resolution."
+            "apps/application-mapping.yml for Jira Application resolution, "
+            "creating that file automatically if it is missing."
         )
     )
     parser.add_argument(

@@ -140,6 +140,7 @@ Before initializing a new app in this workspace:
    - create `constitution.md` in the cloned repo using `templates/constitution.template.md`
    - create the default folder structure for `specs/` and `docs/architecture/`
    - update `apps/application-mapping.yml` so the passed application name matches the Jira `Application` field value for agent resolution
+   - create `apps/application-mapping.yml` automatically if it does not already exist
 
 The generated app scaffold includes these directories:
 

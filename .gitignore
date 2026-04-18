@@ -1,5 +1,6 @@
 # Nested repository
 /apps/*/
+/apps/application-mapping.yml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
