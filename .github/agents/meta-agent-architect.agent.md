@@ -15,7 +15,7 @@ This repository is an agentic operating system for software delivery. It coordin
 
 - `Manager` is the top-level orchestrator.
 - `Jira Connector` is the only Jira bridge.
-- Specification, Development, and Testing each have an orchestrator plus specialist agents.
+- Specification, Coding, and Testing each have an orchestrator plus specialist agents.
 - Shared skills encode reusable operating procedures.
 - `/processes/workflow.md` and `/processes/test-strategy.md` are the authoritative process documents.
 

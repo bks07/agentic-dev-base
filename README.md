@@ -1,6 +1,6 @@
 # agentic-dev-base
 
-An **agentic operating system** for software delivery—a production-ready framework that orchestrates specialized AI agents through a structured workflow engine, enabling frictionless handoffs between specification, development, and testing phases.
+An **agentic operating system** for software delivery—a production-ready framework that orchestrates specialized AI agents through a structured workflow engine, enabling frictionless handoffs between specification, coding, and testing phases.
 
 ## Why This Matters
 
@@ -29,9 +29,9 @@ Explore the ideas behind agentic software delivery:
 User triggers "." in VS Code
          ↓
      Manager (Orchestrator)
-    ↙    ↓    ↓    ↘
-Jira  Spec   Dev   Test
-      ↓      ↓     ↓
+    ↙    ↓    ↓     ↘
+Jira  Spec  Code   Test
+      ↓      ↓      ↓
    Scribes  Coder  Engineers
            Tester  CI
    Designer  Inspector
@@ -45,22 +45,22 @@ Jira  Spec   Dev   Test
 
 **Phase Orchestrators (Process Gatekeepers)**
 - `Specification / Orchestrator` — Intake → spec creation → finalization
-- `Developing / Orchestrator` — Planning → coding → unit testing
+- `Coding / Orchestrator` — Planning → coding → unit testing
 - `Testing / Orchestrator` — Test planning → execution → merge gate
 
 **Planners (Non-Coding Planning)**
 - `Specification / Planner` — Spec task decomposition
-- `Developing / Planner` — Implementation task decomposition
+- `Coding / Planner` — Implementation task decomposition
 - `Testing / Planner` — Test coverage planning
 
 **Specialists (Tool-Wielding Experts)**
 - `Specification / Scribe` — Creates and maintains all spec types (unified agent handles bugfix, story, rebrush, technical initiative)
 - `Specification / Code Inspector` — Reads code to inform specs (read-only)
 - `Specification / Status` — Manages spec lifecycle status
-- `Developing / Coder` — Writes production code
-- `Developing / Unit Tester` — Writes unit tests alongside code
-- `Developing / Designer` — Owns UI/UX and design system
-- `Testing / Test Engineer` — Runs dev tests; adds integration tests
+- `Coding / Coder` — Writes production code
+- `Coding / Unit Tester` — Writes unit tests alongside code
+- `Coding / Designer` — Owns UI/UX and design system
+- `Testing / Test Engineer` — Runs coding-phase tests; adds integration tests
 - `Testing / UI Tester` — E2E browser journeys
 - `Testing / CI Engineer` — CI workflows and artifact handling
 - `Testing / Test Quality Reviewer` — Merge gate gatekeeper
@@ -90,6 +90,7 @@ Skills encode reusable procedures instead of duplicating them across agents:
 processes/             # Authoritative workflow rules
 templates/             # Spec templates (bug, story, rebrush, tech initiative)
 tools/
+  init_app.py          # Clone and bootstrap a new app repo under /apps
   jira-connector/      # Jira API scripts + client
   agent-hooks/         # PreToolUse enforcement (app scope isolation)
 apps/
@@ -121,6 +122,36 @@ specs/                 # Specification files (bugfix, product-areas, rebrushes, 
      - name: "Your App Name"
        app_folder: "your-app-folder-name"
    ```
+
+### Creating a New Application
+
+Before initializing a new app in this workspace:
+
+1. Create a new GitHub repository first.
+2. Copy the repository SSH URL from GitHub.
+3. Run the init tool from the workspace root and pass the exact Jira Application value:
+   ```bash
+   python3 tools/init_app.py --name "Your App Name" git@github.com:your-org/your-new-app.git
+   ```
+4. The tool will:
+   - clone the repository into `apps/`
+   - stop with an error if that app repo already exists in `apps/`
+   - create and switch to the local `develop` branch before adding scaffolded content
+   - create `constitution.md` in the cloned repo using `templates/constitution.template.md`
+   - create the default folder structure for `specs/` and `docs/architecture/`
+   - update `apps/application-mapping.yml` so the passed application name matches the Jira `Application` field value for agent resolution
+
+The generated app scaffold includes these directories:
+
+```text
+specs/
+  bugfixing/
+  product-areas/
+  rebrushes/
+  technical-initiatives/
+docs/
+  architecture/
+```
 
 ### Running the Workflow
 

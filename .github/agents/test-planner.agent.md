@@ -22,9 +22,9 @@ Read `/processes/test-strategy.md` before choosing test layers, routing, or cove
 ## Inputs
 
 1. Implementation summary and changed files from the Coding phase.
-2. Dev-written unit test inventory (files and what they cover).
+2. Coding-phase unit test inventory (files and what they cover).
 3. Spec deltas and acceptance criteria.
-4. Residual risks flagged by `Developing / Orchestrator`.
+4. Residual risks flagged by `Coding / Orchestrator`.
 5. The resolved app folder and app repo path under `/apps`.
 6. The selected app's `constitution.md`.
 
@@ -36,17 +36,17 @@ Read `/processes/test-strategy.md` before choosing test layers, routing, or cove
 
 ## Agent Assignment Rules
 
-1. Assign `Testing / Test Engineer` for running dev-written unit tests, coverage analysis, and integration or edge-case tests.
+1. Assign `Testing / Test Engineer` for running coding-phase unit tests, coverage analysis, and integration or edge-case tests.
 2. Assign `Testing / UI Tester` for browser-level E2E journeys.
 3. Assign `Testing / CI Engineer` for CI workflow creation or updates.
 4. `Testing / Test Quality Reviewer` is always the final task — it reviews the full test change set before the gate decision.
 
 ## Workflow
 
-1. Review the implementation summary, changed files, and dev-written unit tests.
+1. Review the implementation summary, changed files, and coding-phase unit tests.
 2. Read the selected app's `constitution.md` and inspect relevant repo structure.
 3. Map acceptance criteria and residual risks to required test coverage.
-4. Identify coverage gaps that need integration, edge-case, or E2E tests beyond the dev-written unit tests.
+4. Identify coverage gaps that need integration, edge-case, or E2E tests beyond the coding-phase unit tests.
 5. Produce the plan in the required output format.
 6. Validate completeness against the checklist.
 
@@ -68,7 +68,7 @@ Read `/processes/test-strategy.md` before choosing test layers, routing, or cove
 ## Completion Checklist
 
 1. Every acceptance criterion maps to at least one test task.
-2. Dev-written unit test execution is the first task.
+2. Coding-phase unit test execution is the first task.
 3. All task IDs are unique and consistently referenced.
 4. Agent ownership follows `/processes/test-strategy.md` routing rules.
 5. `Testing / Test Quality Reviewer` is the final task.

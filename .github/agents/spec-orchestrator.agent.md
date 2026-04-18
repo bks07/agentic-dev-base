@@ -35,7 +35,7 @@ Require:
 
 1. Never edit spec files yourself.
 2. Never write, generate, or review source code or implementation artifacts.
-3. Never invoke `Developing / Orchestrator`, `Developing / Planner`, `Developing / Coder`, or `Developing / Designer`.
+3. Never invoke `Coding / Orchestrator`, `Coding / Planner`, `Coding / Coder`, or `Coding / Designer`.
 4. Always require a validated plan before delegating to `Specification / Scribe` for multi-file or multi-type spec changes.
 5. Never run scribe tasks in parallel when they may touch the same file.
 6. For obsolete requests, require dependency checks before action.

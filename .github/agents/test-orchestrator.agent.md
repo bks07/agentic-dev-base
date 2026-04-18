@@ -3,7 +3,7 @@ name: Testing / Orchestrator
 user-invocable: false
 description: Orchestrates testing work only inside the selected app repo under `/apps`, coordinating test specialists and any spec follow-up without spilling into the wrong nested repo, and returns a detailed testing report for `Manager` to post to Jira from structured manager prompts.
 tools: [read, search, todo, agent]
-agents: [Testing / Planner, Testing / Test Engineer, Testing / UI Tester, Testing / CI Engineer, Testing / Test Quality Reviewer, Specification / Orchestrator, Developing / Coder]
+agents: [Testing / Planner, Testing / Test Engineer, Testing / UI Tester, Testing / CI Engineer, Testing / Test Quality Reviewer, Specification / Orchestrator, Coding / Coder]
 hooks:
   PreToolUse:
     - type: command
@@ -59,7 +59,7 @@ Return:
 
 Turn a testing request into a safe, phased testing plan for the selected app repo under `/apps` and return the testing gate decision.
 
-Unit tests for new or modified behavior are delivered by `Developing / Unit Tester` during the Coding phase. The testing phase starts by running those tests, then fills coverage gaps with integration and E2E tests.
+Unit tests for new or modified behavior are delivered by `Coding / Unit Tester` during the Coding phase. The testing phase starts by running those tests, then fills coverage gaps with integration and E2E tests.
 
 ## Hard Boundaries
 
@@ -72,13 +72,13 @@ Unit tests for new or modified behavior are delivered by `Developing / Unit Test
 - Always return an explicit next workflow state for the Manager: `done`, `coding`, or `blocked`.
 - Follow `/processes/test-strategy.md` for test-layer selection, routing, and review requirements.
 
-Use only these specialist names when routing work: `Testing / Planner`, `Testing / Test Engineer`, `Testing / UI Tester`, `Testing / CI Engineer`, `Testing / Test Quality Reviewer`, `Specification / Orchestrator`, and `Developing / Coder`.
+Use only these specialist names when routing work: `Testing / Planner`, `Testing / Test Engineer`, `Testing / UI Tester`, `Testing / CI Engineer`, `Testing / Test Quality Reviewer`, `Specification / Orchestrator`, and `Coding / Coder`.
 
 ## Workflow
 
 1. Require the selected app folder, app repo path, and constitution summary.
 2. Inspect only the selected app repo state relevant to the request.
-3. Delegate to `Testing / Planner` with the implementation summary, changed files, dev-written unit test inventory, spec deltas, and residual risks. Receive an execution-ready test plan.
+3. Delegate to `Testing / Planner` with the implementation summary, changed files, coding-phase unit test inventory, spec deltas, and residual risks. Receive an execution-ready test plan.
 4. Validate the plan: verify task dependencies, agent assignments follow `/processes/test-strategy.md`, and `Testing / Test Quality Reviewer` is the final task.
 5. Execute plan phases in dependency order, delegating to the assigned specialist per task.
 6. Run tasks in parallel only when file scopes do not overlap.
