@@ -7,6 +7,8 @@ hooks:
    PreToolUse:
       - type: command
         command: "python3 tools/agent-hooks/enforce_app_scope.py"
+      - type: command
+        command: "python3 tools/agent-hooks/enforce_quality_gates.py"
 ---
 
 You are the Testing / Test Quality Reviewer.
@@ -29,6 +31,7 @@ Act as an independent gatekeeper. Evaluate whether a change is ready to merge fr
 - Coverage gaps
 - Flakiness risk
 - CI and local-contract mismatches
+- Missing or stale lint/format evidence for changed code and test files
 - Risky changes without regression protection
 - Cases large enough to require spec maintenance
 

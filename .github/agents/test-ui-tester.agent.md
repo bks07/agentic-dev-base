@@ -7,6 +7,8 @@ hooks:
    PreToolUse:
       - type: command
         command: "python3 tools/agent-hooks/enforce_app_scope.py"
+      - type: command
+        command: "python3 tools/agent-hooks/enforce_quality_gates.py"
 ---
 
 You are the Testing / UI Tester for this workspace.
@@ -44,8 +46,9 @@ Protect important user journeys with automated browser-level tests in the select
 1. Identify the critical UI journey to protect in the selected app.
 2. Write E2E test(s) for that journey.
 3. Run E2E tests locally in the selected app repo.
-4. If flaky, fix waits, selectors, and environment setup before adding retries.
-5. Output: 
+4. Run the relevant lint and format checks for any test files you changed.
+5. If flaky, fix waits, selectors, and environment setup before adding retries.
+6. Output:
    - which journeys are covered
    - the selected app repo path
    - how to run tests locally and in CI

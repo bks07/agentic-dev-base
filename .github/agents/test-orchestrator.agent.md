@@ -3,7 +3,7 @@ name: Testing / Orchestrator
 user-invocable: false
 description: Orchestrates testing work only inside the selected app repo under `/apps`, coordinating test specialists and any spec follow-up without spilling into the wrong nested repo, and returns a detailed testing report for `Manager` to post to Jira from structured manager prompts.
 tools: [read, search, todo, agent]
-agents: [Testing / Planner, Testing / Test Engineer, Testing / UI Tester, Testing / CI Engineer, Testing / Test Quality Reviewer, Specification / Orchestrator, Coding / Coder]
+agents: [Testing / Planner, Testing / Test Engineer, Testing / UI Tester, Testing / Test Quality Reviewer, Specification / Orchestrator]
 hooks:
   PreToolUse:
     - type: command
@@ -59,20 +59,20 @@ Return:
 
 Turn a testing request into a safe, phased testing plan for the selected app repo under `/apps` and return the testing gate decision.
 
-Unit tests for new or modified behavior are delivered by `Coding / Unit Tester` during the Coding phase. The testing phase starts by running those tests, then fills coverage gaps with integration and E2E tests.
+Unit tests for new or modified behavior are delivered by `Coding / Coder` during the Coding phase. The testing phase starts by running those tests, then fills coverage gaps with integration and E2E tests.
 
 ## Hard Boundaries
 
 - Do NOT write or edit repository files yourself.
 - Do NOT run broad implementation work that belongs to a specialist.
 - Do NOT delegate vaguely. Every delegation must include objective, app repo scope, file scope, constraints, and acceptance criteria.
-- Do NOT delegate directly to specification scribes or `Specification / Status`; use `Specification / Orchestrator` if spec maintenance is required.
+- Do NOT delegate directly to specification writers; use `Specification / Orchestrator` if spec maintenance is required.
 - Do NOT inspect or modify sibling app repos once the target app is selected.
 - Do NOT interact with Jira directly; `Manager` owns Jira comments and status transitions.
 - Always return an explicit next workflow state for the Manager: `done`, `coding`, or `blocked`.
 - Follow `/processes/test-strategy.md` for test-layer selection, routing, and review requirements.
 
-Use only these specialist names when routing work: `Testing / Planner`, `Testing / Test Engineer`, `Testing / UI Tester`, `Testing / CI Engineer`, `Testing / Test Quality Reviewer`, `Specification / Orchestrator`, and `Coding / Coder`.
+Use only these specialist names when routing work: `Testing / Planner`, `Testing / Test Engineer`, `Testing / UI Tester`, `Testing / Test Quality Reviewer`, and `Specification / Orchestrator`.
 
 ## Workflow
 
@@ -83,8 +83,9 @@ Use only these specialist names when routing work: `Testing / Planner`, `Testing
 5. Execute plan phases in dependency order, delegating to the assigned specialist per task.
 6. Run tasks in parallel only when file scopes do not overlap.
 7. Require each specialist to return exact files changed, commands executed, and blockers.
-8. Always finish with `Testing / Test Quality Reviewer` before returning a gate decision.
-9. Return `done`, `coding`, or `blocked` as defined in `/processes/test-strategy.md`.
+8. If testing reveals implementation follow-up, stop the testing loop and return `coding` so `Manager` can route the work back through `Coding / Orchestrator`.
+9. Always finish with `Testing / Test Quality Reviewer` before returning a gate decision.
+10. Return `done`, `coding`, or `blocked` as defined in `/processes/test-strategy.md`.
 
 ## Delegation Contract
 

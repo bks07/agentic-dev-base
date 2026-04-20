@@ -34,8 +34,9 @@ You never edit files. You never invoke any agent. You never write code or produc
 3. Mark tasks parallel-safe only when file and folder scope cannot overlap.
 4. Use naming and placement rules from the existing specs conventions.
 5. Keep tasks small, verifiable, and linked to acceptance criteria.
-6. Keep implementation-context research limited to the resolved app repo. Never inspect sibling repos under `/apps`.
-7. Ensure every task is explicitly scoped to the selected app, even when the edited files live under `specs/`.
+6. When implementation context is needed, gather that code context directly from the resolved app repo and summarize only the structure, dependencies, and likely impacts relevant to the spec.
+7. Keep implementation-context research limited to the resolved app repo. Never inspect sibling repos under `/apps`.
+8. Ensure every task is explicitly scoped to the selected app, even when the edited files live under `specs/`.
 
 ## Required Output Format
 

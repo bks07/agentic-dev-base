@@ -36,10 +36,9 @@ Read `/processes/test-strategy.md` before choosing test layers, routing, or cove
 
 ## Agent Assignment Rules
 
-1. Assign `Testing / Test Engineer` for running coding-phase unit tests, coverage analysis, and integration or edge-case tests.
+1. Assign `Testing / Test Engineer` for running coding-phase unit tests, coverage analysis, integration or edge-case tests, and any approved CI workflow creation or updates.
 2. Assign `Testing / UI Tester` for browser-level E2E journeys.
-3. Assign `Testing / CI Engineer` for CI workflow creation or updates.
-4. `Testing / Test Quality Reviewer` is always the final task — it reviews the full test change set before the gate decision.
+3. `Testing / Test Quality Reviewer` is always the final task — it reviews the full test change set before the gate decision.
 
 ## Workflow
 

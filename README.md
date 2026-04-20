@@ -32,9 +32,9 @@ User triggers "." in VS Code
     ↙    ↓    ↓     ↘
 Jira  Spec  Code   Test
       ↓      ↓      ↓
-   Scribes  Coder  Engineers
-           Tester  CI
-   Designer  Inspector
+ Planner  Coder  Planner
+  Scribe Designer Engineer
+                UI/Review
 ```
 
 ### Agent Layers
@@ -44,25 +44,21 @@ Jira  Spec  Code   Test
 - `Jira Connector` — Only bridge to Jira; owned by Manager
 
 **Phase Orchestrators (Process Gatekeepers)**
-- `Specification / Orchestrator` — Intake → spec creation → finalization
-- `Coding / Orchestrator` — Planning → coding → unit testing
+- `Specification / Orchestrator` — Intake → planning → spec creation/finalization
+- `Coding / Orchestrator` — Planning → design/coding → implementation bundle delivery
 - `Testing / Orchestrator` — Test planning → execution → merge gate
 
 **Planners (Non-Coding Planning)**
-- `Specification / Planner` — Spec task decomposition
+- `Specification / Planner` — Spec task decomposition plus app-scoped code-context research
 - `Coding / Planner` — Implementation task decomposition
 - `Testing / Planner` — Test coverage planning
 
 **Specialists (Tool-Wielding Experts)**
-- `Specification / Scribe` — Creates and maintains all spec types (unified agent handles bugfix, story, rebrush, technical initiative)
-- `Specification / Code Inspector` — Reads code to inform specs (read-only)
-- `Specification / Status` — Manages spec lifecycle status
-- `Coding / Coder` — Writes production code
-- `Coding / Unit Tester` — Writes unit tests alongside code
+- `Specification / Scribe` — Creates, updates, finalizes, and obsoletes all spec types while managing status frontmatter
+- `Coding / Coder` — Writes production code and the unit tests that prove changed behavior
 - `Coding / Designer` — Owns UI/UX and design system
-- `Testing / Test Engineer` — Runs coding-phase tests; adds integration tests
+- `Testing / Test Engineer` — Runs coding-phase tests; adds integration tests and CI updates when needed
 - `Testing / UI Tester` — E2E browser journeys
-- `Testing / CI Engineer` — CI workflows and artifact handling
 - `Testing / Test Quality Reviewer` — Merge gate gatekeeper
 
 ### Shared Knowledge (Skills)
@@ -85,14 +81,14 @@ Skills encode reusable procedures instead of duplicating them across agents:
 
 ```
 .github/
-  agents/              # 18 custom agent definitions
+  agents/              # 15 custom agent definitions
   skills/              # 3 shared skill definitions
 processes/             # Authoritative workflow rules
 templates/             # Spec templates (bug, story, rebrush, tech initiative)
 tools/
   init_app.py          # Clone and bootstrap a new app repo under /apps
   jira-connector/      # Jira API scripts + client
-  agent-hooks/         # PreToolUse enforcement (app scope isolation)
+  agent-hooks/         # Hook-based quality gates (scope, design system, validation)
 apps/
   team-availability-matrix/  # Example app under test
   application-mapping.yml    # Jira Application field → app folder
@@ -187,6 +183,7 @@ See [team-availability-matrix](https://github.com/bks07/team-availability-matrix
 ### Deterministic
 
 - Process documents are the source of truth. Agents follow them.
+- Hook-based guardrails enforce scope, validation, and design-system compliance on deterministic tasks.
 - Workflows are observable via Jira status and agent output.
 - Failures are explicit and recoverable (blocked flag, detailed blockers).
 - No ambiguity in handoffs — contracts are structured and validated.

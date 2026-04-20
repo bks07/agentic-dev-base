@@ -7,7 +7,7 @@ description: "Specification file naming, folder structure, templates, and status
 
 Unified conventions for creating, naming, placing, templating, and managing the lifecycle status of specification files under `specs/`.
 
-Used by `Specification / Orchestrator`, `Specification / Scribe`, `Specification / Planner`, and `Specification / Status`.
+Used by `Specification / Orchestrator`, `Specification / Scribe`, and `Specification / Planner`.
 
 ## Quick Reference
 
@@ -99,7 +99,7 @@ status: NEW
 ---
 ```
 
-If no frontmatter exists, insert it at the top of the file. Only `Specification / Status` agent updates this field. Never modify other frontmatter fields or content outside the frontmatter block when updating status.
+If no frontmatter exists, insert it at the top of the file. `Specification / Scribe` updates this field when creating, changing, finalizing, or obsoleting a spec. Never modify other frontmatter fields or content outside the frontmatter block when updating status.
 
 ## Scribe Assignment
 

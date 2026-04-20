@@ -3,7 +3,7 @@ name: Coding / Planner
 user-invocable: false
 description: Produces execution-ready implementation plans from documentation and repository state for the selected app repo under `/apps`, including branch strategy, task decomposition, agent assignment, dependency ordering, risks, and open questions.
 model: Claude Opus 4.6
-tools: [vscode, execute, read, 'context7/*', edit, search, web, github.vscode-pull-request-github/issue_fetch, github.vscode-pull-request-github/labels_fetch, github.vscode-pull-request-github/notification_fetch, github.vscode-pull-request-github/doSearch, github.vscode-pull-request-github/activePullRequest, github.vscode-pull-request-github/pullRequestStatusChecks, github.vscode-pull-request-github/openPullRequest, todo]
+tools: [execute, read, 'context7/*', search, web, todo]
 hooks:
   PreToolUse:
     - type: command
@@ -44,7 +44,7 @@ You do not implement code. You only produce plans that another agent can execute
 2. Assign `Coding / Coder` for business logic, data flow, API contracts, backend changes, tests, and integration behavior.
 3. Assign both when a change spans UI behavior and underlying logic.
 4. If both are needed, specify execution order and the handoff boundary.
-5. Every implementation task assigned to `Coding / Coder` must be followed by a unit-test task assigned to `Coding / Unit Tester` covering the new or modified behavior. The unit-test task depends on the corresponding implementation task.
+5. Every implementation task assigned to `Coding / Coder` must include the required unit-test work and local validation in that same task's acceptance criteria.
 
 ## Workflow
 
@@ -80,7 +80,7 @@ You do not implement code. You only produce plans that another agent can execute
     - Task ID (unique identifier)
     - Objective
     - Type: design or implementation
-    - Agent owner: `Coding / Designer`, `Coding / Coder`, `Coding / Unit Tester`, or `Coding / Designer`-then-`Coding / Coder` (in order)
+    - Agent owner: `Coding / Designer`, `Coding / Coder`, or `Coding / Designer`-then-`Coding / Coder` (in order)
     - App repo path
     - Files likely affected
     - Dependencies (task IDs).
@@ -102,12 +102,12 @@ You do not implement code. You only produce plans that another agent can execute
 1. Every specification requirement maps to at least one task.
 2. All task IDs are unique and consistently referenced.
 3. Task scopes are non-overlapping or explicitly dependency-linked.
-4. Agent ownership is assigned for every task (`Coding / Designer`, `Coding / Coder`, `Coding / Unit Tester`, or `Coding / Designer`-then-`Coding / Coder`).
+4. Agent ownership is assigned for every task (`Coding / Designer`, `Coding / Coder`, or `Coding / Designer`-then-`Coding / Coder`).
 5. For `Coding / Designer`-then-`Coding / Coder` tasks: `Coding / Designer` produces Implementation Scope and Acceptance Criteria for `Coding / Coder`.
 6. Parallel vs sequential execution is explicitly stated per phase.
 7. All uncertainties and edge cases are listed as open questions.
 8. All code and test scopes stay inside the selected app repo.
-9. Every `Coding / Coder` task has a corresponding `Coding / Unit Tester` task in its acceptance criteria.
+9. Every `Coding / Coder` task includes explicit unit-test and validation expectations in its acceptance criteria.
 
 ## Rules
 
